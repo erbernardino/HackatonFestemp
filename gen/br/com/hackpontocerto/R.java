@@ -9,6 +9,7 @@ package br.com.hackpontocerto;
 
 public final class R {
     public static final class array {
+        public static final int raios=0x7f060001;
         public static final int segmentos=0x7f060000;
     }
     public static final class attr {
@@ -27,21 +28,29 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f090003;
-        public static final int spinner1=0x7f090000;
-        public static final int textView1=0x7f090001;
-        public static final int webView1=0x7f090002;
+        public static final int action_settings=0x7f090006;
+        public static final int editText1=0x7f090002;
+        public static final int mainLayout=0x7f090000;
+        public static final int spinnerSeg=0x7f090001;
+        public static final int textView2=0x7f090003;
+        public static final int textView3=0x7f090004;
+        public static final int webView1=0x7f090005;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
+        public static final int tela_mapa=0x7f030000;
+        public static final int tela_principal=0x7f030001;
     }
     public static final class menu {
-        public static final int main=0x7f080000;
+        public static final int activity_mapa=0x7f080000;
+        public static final int activity_principal=0x7f080001;
+        public static final int main=0x7f080002;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
         public static final int hello_world=0x7f050002;
+        public static final int title_activity_activity_mapa=0x7f050004;
+        public static final int title_activity_activity_principal=0x7f050003;
     }
     public static final class style {
         /** 
