@@ -5,8 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,6 +27,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import br.com.hackpontocerto.GeocodeResponse2.Geocode;
 
@@ -40,7 +40,13 @@ public class MainActivity extends Activity {
 	private EditText editText;
 	boolean espera = true;
 	private String s1;
-	List<ListView> listviews = new ArrayList<ListView>();
+	LinkedList<ListView> listviews = new LinkedList();
+	LinkedList<String> enderecos = new LinkedList<String>();
+	String loc = "-23.5150231,-46.6418381";
+	String lat = "-23.5150231";
+	String lng = "-46.6418381";
+	Spinner spinnerseg;
+	Spinner spinnerRaio;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,9 @@ public class MainActivity extends Activity {
 				.permitAll().build();
 		StrictMode.setThreadPolicy(policy);
 		editText = (EditText) findViewById(R.id.editText1);
+
+		Spinner spinnerSeg = (Spinner) findViewById(R.id.spinnerSeg);
+		Spinner spinnerRaio = (Spinner) findViewById(R.id.spinner1);
 
 		editText.addTextChangedListener(new TextWatcher() {
 
@@ -70,7 +79,8 @@ public class MainActivity extends Activity {
 								if (!espera && s1 != null) {
 
 									String content = getURLContent("http://maps.google.com/maps/api/geocode/json?address="
-											+ URLEncoder.encode(s1) + "&sensor=false&region=br&language=pt-BR");
+											+ URLEncoder.encode(s1)
+											+ "&sensor=false&region=br&language=pt-BR");
 									s1 = null;
 
 									Gson gson = new Gson();
@@ -79,19 +89,25 @@ public class MainActivity extends Activity {
 											content, GeocodeResponse2.class);
 
 									System.out.println(geo);
-									if (geo.getResults().size() ==1) {
-										
-										criaLista(new String[] {geo.getResults().get(0).getFormatted_address()});
+									if (geo.getResults().size() == 1) {
+										enderecos = new LinkedList<String>();
+										String ende = geo.getResults().get(0)
+												.getFormatted_address();
+										enderecos.add(ende);
+										criaLista(new String[] { ende });
+
 									} else if (geo.getResults().size() > 1) {
-										List<String> l = new ArrayList<String>();
-											
+										enderecos = new LinkedList<String>();
+
 										for (Geocode result : geo.getResults()) {
-											l.add(result.getFormatted_address());
+											enderecos.add(result
+													.getFormatted_address());
 
 										}
-										String[] array = new String[l.size()];
-										
-										criaLista(l.toArray(array));
+										String[] array = new String[enderecos
+												.size()];
+
+										criaLista(enderecos.toArray(array));
 										espera = true;
 									}
 								}
@@ -113,17 +129,46 @@ public class MainActivity extends Activity {
 
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				
-				
+
 			}
 
 		});
 
-		webView = (WebView) findViewById(R.id.webView1);
-		WebSettings webSettings = webView.getSettings();
-		webSettings.setJavaScriptEnabled(true);
+		spinnerRaio
+				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-		webView.loadUrl("http://www.fisioterapiapirituba.com.br/teste.html");
+					public void onItemSelected(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						disparaMapa(null, null, null);
+
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> arg0) {
+						// TODO Auto-generated method stub.
+
+					}
+
+				});
+
+		spinnerSeg
+				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+					public void onItemSelected(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						disparaMapa(null, null, null);
+
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> arg0) {
+						// TODO Auto-generated method stub.
+
+					}
+
+				});
+
+		disparaMapa(null, null, null);
 
 		criaLista(new String[] {});
 
@@ -144,25 +189,61 @@ public class MainActivity extends Activity {
 		return sb.toString();
 	}
 
+	public void disparaMapa(String endereco, String raio, String segmento) {
+		if (raio == null) {
+			if (spinnerRaio != null) {
+				raio = String.valueOf(spinnerRaio.getSelectedItem());
+			}
+		}
+		if (segmento == null) {
+			if (spinnerseg != null) {
+				segmento = String.valueOf(spinnerseg.getSelectedItem());
+			}
+		}
+		if (endereco == null) {
+			if (enderecos.size() > 0) {
+				endereco = enderecos.getFirst();
+			} else {
+				endereco = "Anhembi Parque, Sao Paulo";
+			}
+		}
+
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+		webView = (WebView) findViewById(R.id.webView1);
+		WebSettings webSettings = webView.getSettings();
+		webSettings.setJavaScriptEnabled(true);
+
+		webView.loadUrl("http://www.fisioterapiapirituba.com.br/teste.html?endereco=" + URLEncoder.encode(endereco) + "&raio=1Km&segmento="+ segmento +"&latitude=-23.5150231&longitude=-46.6418381");
+
+	}
+
 	public void criaLista(String[] lista) {
 
 		if (lista.length > 0) {
 			ListView list = new ListView(this);
-			
+
 			listviews.add(list);
 			list.setAdapter(new MyAdapter(this, lista));
 
-			
 			list.setY(100);
 			list.setBackgroundColor(Color.GRAY);
 
 			list.setOnItemClickListener(new OnItemClickListener() {
 				public void onItemClick(AdapterView<?> arg0, View v,
 						int position, long id) {
+					System.out.println("********************** " + (id));
+					// editText = (EditText) findViewById(R.id.editText1);
+					// editText.setText(enderecos.get((int)id));
+					String endereco = enderecos.get((int) id);
+					enderecos = new LinkedList<String>();
+					enderecos.add(endereco);
+
 					for (ListView lv : listviews) {
 						lv.setVisibility(View.INVISIBLE);
 					}
-					//TODO:Criar chamada a url
+
+					// TODO:Criar chamada a url
 				}
 			});
 
@@ -188,6 +269,8 @@ public class MainActivity extends Activity {
 
 			TextView listText = new TextView(MainActivity.this);
 			listText.setId(5001);
+			listText.setTextColor(Color.WHITE);
+			listText.setTextSize(20);
 
 			listLayout.addView(listText);
 
@@ -195,5 +278,7 @@ public class MainActivity extends Activity {
 
 			return listLayout;
 		}
+		
+		
 	}
 }
