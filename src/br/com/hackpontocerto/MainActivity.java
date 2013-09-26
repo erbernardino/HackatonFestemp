@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
 		StrictMode.setThreadPolicy(policy);
 		editText = (EditText) findViewById(R.id.editText1);
 
-		Spinner spinnerSeg = (Spinner) findViewById(R.id.spinnerSeg);
+		 spinnerseg = (Spinner) findViewById(R.id.spinnerSeg);
 		Spinner spinnerRaio = (Spinner) findViewById(R.id.spinner1);
 
 		editText.addTextChangedListener(new TextWatcher() {
@@ -151,7 +151,7 @@ public class MainActivity extends Activity {
 
 				});
 
-		spinnerSeg
+		spinnerseg
 				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
 					public void onItemSelected(AdapterView<?> arg0, View arg1,
@@ -198,6 +198,8 @@ public class MainActivity extends Activity {
 		if (segmento == null) {
 			if (spinnerseg != null) {
 				segmento = String.valueOf(spinnerseg.getSelectedItem());
+			}else{
+				segmento = "cafe";
 			}
 		}
 		if (endereco == null) {
@@ -214,7 +216,7 @@ public class MainActivity extends Activity {
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 
-		webView.loadUrl("http://www.fisioterapiapirituba.com.br/teste.html?endereco=" + URLEncoder.encode(endereco) + "&raio=1Km&segmento="+ segmento +"&latitude=-23.5150231&longitude=-46.6418381");
+		webView.loadUrl("http://www.fisioterapiapirituba.com.br/teste.html?endereco=" + URLEncoder.encode(endereco) + "&raio=1000&segmento="+ URLEncoder.encode(segmento) +"&latitude=-23.5150231&longitude=-46.6418381");
 
 	}
 
